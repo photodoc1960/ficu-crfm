@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.eggs/
+
+# Model checkpoints (large binary files)
+checkpoints/*.pt
+
+# Logs (regenerable from experiments)
+logs/*.csv
+logs/*.log
+
+# Data (not distributed with code)
+*.tgz
+*.tar.gz
+*.zip
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Figure rasters (regenerable; PDFs are committed)
+figures/*.png
+figures/*.npz
+figures/out/
+
+# HuggingFace cache
+hf_cache/
+
+# Claude Code internal
+.claude/
+
+# Double-nested artifacts from early path bugs
+ficu_crfm/

@@ -1,0 +1,19 @@
+\begin{table}[ht]
+\centering
+\caption{Readout ablation at Layer~1 (phoneme recognition, 40 classes, TIMIT).
+All variants resume from the same trained L1 physics checkpoint; only the
+readout extraction and classification scheme differ.}
+\label{tab:readout_ablation}
+\begin{tabular}{llcc}
+\toprule
+\textbf{Readout} & \textbf{Feature space} & \textbf{Dim} & \textbf{Val Acc (\%)} \\
+\midrule
+Holographic linear       & Pooled phase features          & 162   & \textbf{38.55} \\
+Coherent matched filter  & Raw complex field              & 18,048 & 17.5 \\
+Coherent matched filter  & Pooled complex features        & 81 (complex) & 2.6 \\
+Whitened coherent        & Pooled complex features        & 81 (complex) & 3.0 \\
+\midrule
+\multicolumn{3}{l}{\textit{Chance level (40 classes)}} & 2.5 \\
+\bottomrule
+\end{tabular}
+\end{table}

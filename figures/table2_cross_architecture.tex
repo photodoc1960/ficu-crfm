@@ -1,0 +1,18 @@
+\begin{table}[ht]
+\centering
+\caption{Cross-architecture comparison on TIMIT word recognition (501 classes).
+Both models receive identical mel-spectrogram input features; they differ only
+in the classification mechanism. The MLP uses backpropagation (Adam optimiser);
+the FICU model uses equilibrium propagation with a holographic delta-rule readout.}
+\label{tab:cross_architecture}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{Training rule} & \textbf{Epochs} & \textbf{Val Acc (\%)} & \textbf{$\times$ Chance} \\
+\midrule
+MLP (512$\to$256$\to$501) & Backpropagation (Adam) & 100 & 25.3 & 127$\times$ \\
+FICU L2 (holographic)     & EP + delta rule        & 15  & \textbf{38.85} & \textbf{195$\times$} \\
+\midrule
+\multicolumn{3}{l}{\textit{Improvement}} & \multicolumn{2}{c}{\textbf{+13.5 pp}} \\
+\bottomrule
+\end{tabular}
+\end{table}
