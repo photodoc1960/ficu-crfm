@@ -88,3 +88,38 @@ python -u -m runs.run_multiseed_cascade_unhealthy
 Each orchestrator is idempotent — completed seeds are skipped on
 re-invocation, so individual seeds can be regenerated without
 re-running the full sweep.
+
+## Archived snapshot and full checkpoint bundle
+
+A versioned snapshot of this repository, together with all of the
+checkpoints withheld above (frozen L1/L2 backbones, 5-seed healthy
+cascade, paired 5-seed unhealthy cascade, and the attenuated-regime
+L3 source), is archived on Zenodo:
+
+> **DOI:** [10.5281/zenodo.2034701](https://doi.org/10.5281/zenodo.2034701)
+
+The Zenodo record contains:
+
+- `ficu-crfm-code-0489063.tar.gz` — clean `git archive` of commit
+  [`0489063`](https://github.com/photodoc1960/ficu-crfm/commit/0489063)
+- `ficu-crfm-checkpoints-v1.tar.gz` — all `.pt` checkpoints, figure
+  files (PNG + PDF), per-seed CSV logs, per-sample TBI arrays
+  (`.npz`), distribution-statistics JSON, summary markdowns, and a
+  `MANIFEST.txt` with per-file sha256 sums
+
+### How to cite
+
+```bibtex
+@software{slater_ficu_crfm_2026,
+  author    = {Slater, Jeremy},
+  title     = {{FICU-CRFM v1.0 — code, checkpoints, and figure data
+                for ``Hierarchical Automaticity Emerges from
+                Prediction-Error-Triggered Learning in Continuous
+                Wave Fields Trained by Equilibrium Propagation''}},
+  year      = {2026},
+  publisher = {Zenodo},
+  version   = {1.0.0},
+  doi       = {10.5281/zenodo.2034701},
+  url       = {https://doi.org/10.5281/zenodo.2034701}
+}
+```
