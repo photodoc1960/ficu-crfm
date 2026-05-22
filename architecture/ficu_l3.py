@@ -32,12 +32,18 @@ class FICUL3Sentence(nn.Module):
     WIDTH = 16
     CHANNELS = 3
 
-    def __init__(self, n_classes=3, n_settle_steps=24, dt=0.07, beta=0.1):
+    def __init__(self, n_classes=3, n_settle_steps=24, dt=0.07, beta=0.1,
+                 drive_gain=1.0):
         super().__init__()
         self.n_classes = n_classes
         self.n_settle_steps = n_settle_steps
         self.dt = dt
         self.beta = beta
+        # Sensory drive gain applied to the L2->L3 projection inside field_step.
+        # Set to 1.0 for the healthy-physics cascade regime; set to 0.1 to
+        # reproduce the attenuated regime used in the Figure 4 dissociation
+        # ablation (L3_TBI ~ 0.024-0.040, val_acc ~ 56%).
+        self.drive_gain = drive_gain
 
         C = self.CHANNELS
         gamma_values = [0.025, 0.050, 0.100]
@@ -107,8 +113,8 @@ class FICUL3Sentence(nn.Module):
         dZ_r = dZ_r + epsilon * other * Z_r
         dZ_i = dZ_i + epsilon * other * Z_i
 
-        dZ_r = dZ_r + 1.0 * drive_r
-        dZ_i = dZ_i + 1.0 * drive_i
+        dZ_r = dZ_r + self.drive_gain * drive_r
+        dZ_i = dZ_i + self.drive_gain * drive_i
 
         Z_r = (Z_r + self.dt * dZ_r) / (1 + self.dt * gamma)
         Z_i = (Z_i + self.dt * dZ_i) / (1 + self.dt * gamma)

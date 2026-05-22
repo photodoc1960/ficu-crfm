@@ -240,6 +240,24 @@ def _build_datasets(args):
 # ---------------------------------------------------------------------------
 
 def train_l3(args):
+    # Seed all RNGs for statistical replication across seeds. We do NOT
+    # set cudnn.deterministic=True — that would double wall-clock for
+    # bitwise reproducibility we don't need. Seeding torch + CUDA + numpy
+    # + python random + PYTHONHASHSEED is enough to pin: PredictiveField
+    # W_pf init, batch shuffling, PETU mask draws, and any other
+    # RNG-driven code paths.
+    if getattr(args, 'seed', None) is not None:
+        import os, random
+        import numpy as np
+        seed = int(args.seed)
+        os.environ['PYTHONHASHSEED'] = str(seed)
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
+        print(f"[train_l3] seed={seed} (cudnn.deterministic=False)", flush=True)
+
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"[train_l3] device: {device}", flush=True)
 
@@ -291,7 +309,20 @@ def train_l3(args):
     # ---- L3 fresh + PredictiveField ----
     l3 = FICUL3Sentence(n_classes=N_SENTENCE_TYPES,
                         n_settle_steps=args.n_settle_steps,
-                        beta=args.beta_nudge).to(device)
+                        beta=args.beta_nudge,
+                        drive_gain=args.l3_drive_gain).to(device)
+    if args.l3_resume_from is not None:
+        state = torch.load(args.l3_resume_from, map_location=device,
+                           weights_only=True)
+        l3_sd = state.get('l3', state)
+        m_sd = l3.state_dict()
+        compat = {k: v for k, v in l3_sd.items()
+                  if k in m_sd and v.shape == m_sd[k].shape}
+        missing, unexpected = l3.load_state_dict(compat, strict=False)
+        print(f"[train_l3] L3 resumed from {args.l3_resume_from} "
+              f"(loaded={len(compat)}/{len(l3_sd)} "
+              f"missing={len(missing)} unexpected={len(unexpected)} "
+              f"drive_gain={l3.drive_gain})", flush=True)
     pred = PredictiveField(
         l3_shape=(FICUL3Sentence.CHANNELS, FICUL3Sentence.HEIGHT, FICUL3Sentence.WIDTH),
         l2_shape=(FICUL2Word.CHANNELS, FICUL2Word.HEIGHT, FICUL2Word.WIDTH),
@@ -446,9 +477,20 @@ def parse_args():
     p.add_argument('--epochs', type=int, default=15)
     p.add_argument('--batch_size', type=int, default=32)
     p.add_argument('--num_workers', type=int, default=4)
+    p.add_argument('--seed', type=int, default=None,
+                   help='RNG seed for statistical replication. Sets '
+                        'torch/CUDA/numpy/random/PYTHONHASHSEED but leaves '
+                        'cudnn.deterministic=False to avoid 2x wall-clock cost.')
     p.add_argument('--n_settle_steps', type=int, default=24)
     p.add_argument('--beta_nudge', type=float, default=0.1,
                    help='EP nudge magnitude for L3')
+    p.add_argument('--l3_drive_gain', type=float, default=1.0,
+                   help='Sensory drive gain at L3 (1.0 = healthy regime, '
+                        '0.1 = attenuated regime matching the Figure 4 ablation)')
+    p.add_argument('--l3_resume_from', default=None,
+                   help='Optional checkpoint to load L3 starting state from '
+                        '(physics + readout). Used to plug a pre-calibrated '
+                        'L3 into the cascade without retraining from scratch.')
     p.add_argument('--petu_threshold_frac', '--petu_threshold',
                    dest='petu_threshold_frac', type=float, default=0.5)
     p.add_argument('--petu_coh_floor', type=float, default=0.35)

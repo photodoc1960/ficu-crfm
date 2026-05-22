@@ -7,6 +7,7 @@ __pycache__/
 
 # Model checkpoints (large binary files)
 checkpoints/*.pt
+runs/**/*.pt
 
 # Logs (regenerable from experiments)
 logs/*.csv
