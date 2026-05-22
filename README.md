@@ -96,7 +96,7 @@ checkpoints withheld above (frozen L1/L2 backbones, 5-seed healthy
 cascade, paired 5-seed unhealthy cascade, and the attenuated-regime
 L3 source), is archived on Zenodo:
 
-> **DOI:** [10.5281/zenodo.2034701](https://doi.org/10.5281/zenodo.2034701)
+> **DOI:** [10.5281/zenodo.20347014](https://doi.org/10.5281/zenodo.20347014)
 
 The Zenodo record contains:
 
@@ -119,7 +119,7 @@ The Zenodo record contains:
   year      = {2026},
   publisher = {Zenodo},
   version   = {1.0.0},
-  doi       = {10.5281/zenodo.2034701},
-  url       = {https://doi.org/10.5281/zenodo.2034701}
+  doi       = {10.5281/zenodo.20347014},
+  url       = {https://doi.org/10.5281/zenodo.20347014}
 }
 ```
